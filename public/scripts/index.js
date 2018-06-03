@@ -1,16 +1,30 @@
+/**
+ * References the html elements.
+ */
 const localVideoElement = document.getElementById("localVideo");
 const remoteVideoElement = document.getElementById("remoteVideo");
 const start = document.getElementById("start");
 const call = document.getElementById("call");
 const hangup = document.getElementById("hangup");
 
+/**
+ * Declares the local variables.
+ */
 let localStream;
 let localPeerConnection, remotePeerConnection;
 
+/**
+ * Initial setup on page load.
+ */
 hangup.disabled = true;
 call.disabled = true;
 
-
+/**
+ * startButtonClicked
+ * Defines the onClick event for start button.
+ * Gets the MediaStream from the MediaDevices Api and
+ * feeds to the local video element.
+ */
 const startButtonClicked = () => {
   start.disabled = true;
   call.disabled = false;
@@ -28,6 +42,12 @@ const startButtonClicked = () => {
   })
 };
 
+/**
+ * callButtonClicked
+ * Defines the onClick event for the call button.
+ * Defines the local and remote RTCPeerConnection and
+ * coordinates handshaking between the local and remote.
+ */
 const callButtonClicked = () => {
   start.disabled = true;
   call.disabled = true;
@@ -46,7 +66,7 @@ const callButtonClicked = () => {
 
   let server = null;
 
-  //Setting Up LocalPeerConnection
+  //Setting up local RTCPeerConnection.
   localPeerConnection = new RTCPeerConnection(server);
 
   localPeerConnection.onicecandidate = (event)  => {
@@ -57,6 +77,7 @@ const callButtonClicked = () => {
     })
   };
 
+  //Setting up remote RTCPeerConnection.
   remotePeerConnection = new RTCPeerConnection(server)
 
   remotePeerConnection.onicecandidate = (event) => {
@@ -88,7 +109,7 @@ const callButtonClicked = () => {
 
   localStream.getVideoTracks().forEach( (track) => localPeerConnection.addTrack(track, localStream) );
 
-  //Local RTCPeerConnection Creating Offer
+  //Local RTCPeerConnection creates asynchronous offer.
   localPeerConnection.createOffer(
     {
       offerToReceiveAudio: 0,
@@ -108,7 +129,7 @@ const callButtonClicked = () => {
       console.log(`Remote: setRemoteDescription Failure on remotePeerConnection: ${error}`);
     })
 
-    //Remote RTCPeerConnection Creating Answer.
+    //Remote RTCPeerConnection creates asynchronous answer.
     remotePeerConnection.createAnswer().then((description) => {
 
       console.log(`Answer from remotePeerConnection: ${description.sdp}`);
@@ -135,6 +156,12 @@ const callButtonClicked = () => {
   })
 };
 
+/**
+ * hangupButtonClicked
+ * Defines the onClick event for hangup button.
+ * Resets the state for fresh start of RTCPeerConnection
+ * and MediaStream consumption.
+ */
 const hangupButtonClicked = () => {
   if(localPeerConnection) {
     localPeerConnection.close();
@@ -151,6 +178,9 @@ const hangupButtonClicked = () => {
   start.disabled = false;
 };
 
+/**
+ * Defines the appropriate onClick events for buttons.
+ */
 start.onclick = startButtonClicked;
 call.onclick = callButtonClicked;
 hangup.onclick = hangupButtonClicked;

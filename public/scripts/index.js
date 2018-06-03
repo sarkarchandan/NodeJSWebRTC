@@ -1,4 +1,9 @@
 /**
+ * Instantiates the client-side socket
+ */
+const socket = io();
+
+/**
  * References the html elements.
  */
 const localVideoElement = document.getElementById("localVideo");
@@ -184,3 +189,18 @@ const hangupButtonClicked = () => {
 start.onclick = startButtonClicked;
 call.onclick = callButtonClicked;
 hangup.onclick = hangupButtonClicked;
+
+/**
+ * Defining socket event listeners.
+ */
+socket.on("connect", () => {
+  console.log("Connected to server.");
+});
+
+socket.on("welcomeMessage", (message) => {
+  console.log(message);
+})
+
+socket.on("disconnect", () => {
+  console.log("Disconnected from server.");
+});
